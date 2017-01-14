@@ -34,15 +34,25 @@ require_once (__DIR__ . DIRECTORY_SEPARATOR . 'objects.php');
  * For Table:-
  * <code>
  * CREATE TABLE `please_messages` (
- *   `id` mediumint(30) UNSIGNED NOT NULL AUTO_INCREMENT,
- *   `email-id` mediumint(30) UNSIGNED DEFAULT '0',
- *   `subject-id` mediumint(30) UNSIGNED DEFAULT '0',
- *   `ticket-id` mediumint(30) UNSIGNED DEFAULT '0',
- *   `message-id` varchar(64) UNSIGNED DEFAULT '',
- *   `from-id` mediumint(30) UNSIGNED DEFAULT '0',
- *   `when` int(12) DEFAULT '0',
+ *   `id` mediumint(30) unsigned NOT NULL AUTO_INCREMENT,
+ *   `typal` enum('ndn','inbound','outbound','spam','unknown') DEFAULT 'unknown',
+ *   `email-id` mediumint(30) unsigned DEFAULT '0',
+ *   `subject-id` mediumint(30) unsigned DEFAULT '0',
+ *   `ticket-id` mediumint(30) unsigned DEFAULT '0',
+ *   `mailbox-id` mediumint(30) unsigned DEFAULT '0',
+ *   `message-id` varchar(64) DEFAULT '',
+ *   `from-id` mediumint(30) unsigned DEFAULT '0',
+ *   `spam-email` enum('Yes','No') DEFAULT 'No',
+ *   `spam-checking` enum('enabled','disabled') DEFAULT 'disabled',
+ *   `spam-training` enum('used','ignored') DEFAULT 'ignored',
+ *   `wammy-typal` enum('ham','spam','unknown') DEFAULT 'unknown',
+ *   `wammy-high` int(10) unsigned DEFAULT '0',
+ *   `wammy-low` int(10) unsigned DEFAULT '0',
+ *   `words` int(10) unsigned DEFAULT '0',
+ *   `files` int(10) unsigned DEFAULT '0',
+ *   `when` int(12) unsigned DEFAULT '0',
  *   PRIMARY KEY (`id`),
- *   KEY `SEARCH` (`email-id`,`subject-id`,`ticket-id`,`message-id`(32))
+ *   KEY `SEARCH` (`email-id`,`subject-id`,`ticket-id`,`mailbox-id`,`message-id`(32))
  * ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
  * </code>
  * @author Simon Roberts (wishcraft@users.sourceforge.net)
@@ -57,11 +67,21 @@ class pleaseMessages extends pleaseXoopsObject
     {   	
     	
         self::initVar('id', XOBJ_DTYPE_INT, null, false);
+        self::initVar('typal', XOBJ_DTYPE_ENUM, 'unknown', false, false, false, getEnumeratorValues(basename(__FILE__), 'typal'));
         self::initVar('email-id', XOBJ_DTYPE_INT, null, false);
         self::initVar('subject-id', XOBJ_DTYPE_INT, null, false);
         self::initVar('ticket-id', XOBJ_DTYPE_INT, null, false);
+        self::initVar('mailbox-id', XOBJ_DTYPE_INT, null, false);
         self::initVar('message-id', XOBJ_DTYPE_TXTBOX, null, false, 64);
         self::initVar('from-id', XOBJ_DTYPE_INT, null, false);
+        self::initVar('spam-email', XOBJ_DTYPE_ENUM, 'No', false, false, false, getEnumeratorValues(basename(__FILE__), 'spam-email'));
+        self::initVar('spam-checking', XOBJ_DTYPE_ENUM, 'disabled', false, false, false, getEnumeratorValues(basename(__FILE__), 'spam-checking'));
+        self::initVar('spam-training', XOBJ_DTYPE_ENUM, 'ignored', false, false, false, getEnumeratorValues(basename(__FILE__), 'spam-training'));
+        self::initVar('wammy-typal', XOBJ_DTYPE_ENUM, 'ham', false, false, false, getEnumeratorValues(basename(__FILE__), 'wammy-typal'));
+        self::initVar('wammy-high', XOBJ_DTYPE_INT, null, false);
+        self::initVar('wammy-low', XOBJ_DTYPE_INT, null, false);
+        self::initVar('words', XOBJ_DTYPE_INT, time(), false);
+        self::initVar('files', XOBJ_DTYPE_INT, time(), false);
         self::initVar('when', XOBJ_DTYPE_INT, time(), false);
         
         $this->handler = __CLASS__ . 'Handler';

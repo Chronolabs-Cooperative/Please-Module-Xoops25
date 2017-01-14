@@ -21,15 +21,12 @@
 * @link			http://internetfounder.wordpress.com
 */
 
-
-define('_ERR_PLEASE_ADMIN_NODEPARTMENTS','You will have to add a department to getting started to setting up email ticketing first!');
-define('_ERR_PLEASE_ADMIN_LISTRANGEEXCEEDED','The range you have specified contains no data; will step back until data is found!');
-define('_ERR_PLEASE_ADMIN_INVALIDHASH', 'Invalid Identity Hash for the items; this means the checksum given was not locatable in the databaase!');
-
-/**
- * Mantis JSON Adaptor Error messages
- */
-define("_ERR_MANTIS_ADAPTOR_NOSUPPORT", "Mantis is not configured to be supported by the adaptor in module configurations.");
-define("_ERR_MANTIS_ADAPTOR_NOFUNCTION", "No function name specified.");
-define("_ERR_MANTIS_ADAPTOR_NOPASSKEY", "No security passkey specified.");
-define("_ERR_MANTIS_ADAPTOR_WRONGPASS", "No security passkey accuracy call IPv4 ~ %s.");
+$GLOBALS['template'] = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . str_replace('.php', '.html', basename(__FILE__));
+global $xoopsModule, $xoopsTpl, $thisModuleDir;
+include_once __DIR__ . '/header.php';
+xoops_cp_header();
+$indexAdmin = new ModuleAdmin();
+$GLOBALS['xoopsTpl']->assign('nav',$indexAdmin->addNavigation('departments.php'));
+$departments_handler = xoops_getModuleHandler('departments', $thisModuleDir);
+$GLOBALS['xoopsTpl']->assign('form', $departments_handler->getAddFormAdmin());
+include_once __DIR__ . '/footer.php';

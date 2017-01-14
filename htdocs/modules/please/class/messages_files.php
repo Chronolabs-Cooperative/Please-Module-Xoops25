@@ -1,6 +1,6 @@
 <?php
 /**
- * Please Subjects Ticketer of Batch Group & User Subjectss
+ * Please Messages_files Ticketer of Batch Group & User Messages_filess
  *
  * You may not change or alter any portion of this comment or credits
  * of supporting developers from this source code or any supporting source code
@@ -13,7 +13,7 @@
  * @license     	General Public License version 3 (http://labs.coop/briefs/legal/general-public-licence/13,3.html)
  * @author      	Simon Roberts (wishcraft) <wishcraft@users.sourceforge.net>
  * @subpackage  	please
- * @description 	Subjects Ticking for Support/Faults/Management of Batch Group & User managed emails tickets
+ * @description 	Messages_files Ticking for Support/Faults/Management of Batch Group & User managed emails tickets
  * @version			1.0.5
  * @link        	https://sourceforge.net/projects/chronolabs/files/XOOPS%202.5/Modules/please
  * @link        	https://sourceforge.net/projects/chronolabs/files/XOOPS%202.6/Modules/please
@@ -29,23 +29,22 @@ if (!defined('_MI_PLEASE_MODULE_DIRNAME')) {
 require_once (__DIR__ . DIRECTORY_SEPARATOR . 'objects.php');
 
 /**
- * Class for Subjects in Please email ticketer
+ * Class for Messages_files in Please email ticketer
  *
  * For Table:-
  * <code>
- * CREATE TABLE `please_subjects` (
- *   `id` mediumint(30) UNSIGNED NOT NULL AUTO_INCREMENT,
- *   `subject` varchar(300) DEFAULT '',
- *   `email-id` int(30) UNSIGNED DEFAULT '0',
- *   `created` int(12) DEFAULT '0',
- *   PRIMARY KEY (`id`),
- *   KEY `SEARCH` (`subject`(30),`email-id`)
+ * CREATE TABLE `please_messages_files` (
+ *   `id` mediumint(38) unsigned NOT NULL AUTO_INCREMENT,
+ *   `message-id` mediumint(30) unsigned DEFAULT '0',
+ *   `file-id` mediumint(30) unsigned DEFAULT '0',
+ *   `accessed` int(12) DEFAULT '0',
+ *   PRIMARY KEY (`id`)
  * ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
  * </code>
  * @author Simon Roberts (wishcraft@users.sourceforge.net)
  * @copyright copyright (c) 2015 labs.coop
  */
-class pleaseSubjects extends pleaseXoopsObject
+class pleaseMessages_files extends pleaseXoopsObject
 {
 
 	var $handler = '';
@@ -54,9 +53,9 @@ class pleaseSubjects extends pleaseXoopsObject
     {   	
     	
         self::initVar('id', XOBJ_DTYPE_INT, null, false);
-        self::initVar('subject', XOBJ_DTYPE_TXTBOX, null, false, 300);
-        self::initVar('email-id', XOBJ_DTYPE_INT, null, false);
-        self::initVar('created', XOBJ_DTYPE_INT, time(), false);
+        self::initVar('message-id', XOBJ_DTYPE_INT, null, false);
+        self::initVar('file-id', XOBJ_DTYPE_INT, null, false);
+        self::initVar('accessed', XOBJ_DTYPE_INT, null, false);
         
         $this->handler = __CLASS__ . 'Handler';
         if (!empty($id) && !is_null($id))
@@ -71,11 +70,11 @@ class pleaseSubjects extends pleaseXoopsObject
 
 
 /**
- * Handler Class for Subjects in Please email ticketer
+ * Handler Class for Messages_files in Please email ticketer
  * @author Simon Roberts (wishcraft@users.sourceforge.net)
  * @copyright copyright (c) 2015 labs.coop
  */
-class pleaseSubjectsHandler extends pleaseXoopsObjectHandler
+class pleaseMessages_filesHandler extends pleaseXoopsObjectHandler
 {
 	
 
@@ -84,14 +83,14 @@ class pleaseSubjectsHandler extends pleaseXoopsObjectHandler
 	 * 
 	 * @var string
 	 */
-	var $tbl = 'please_subjects';
+	var $tbl = 'please_messages_files';
 	
 	/**
 	 * Child Object Handling Class
 	 *
 	 * @var string
 	 */
-	var $child = 'pleaseSubjects';
+	var $child = 'pleaseMessages_files';
 	
 	/**
 	 * Child Object Identity Key
@@ -105,35 +104,13 @@ class pleaseSubjectsHandler extends pleaseXoopsObjectHandler
 	 *
 	 * @var string
 	 */
-	var $envalued = 'subject';
+	var $envalued = 'file-id';
 	
     function __construct(&$db) 
     {
     	if (!object($db))
     		$db = $GLOBAL["xoopsDB"];
         parent::__construct($db, self::$tbl, self::$child, self::$identity, self::$envalued);
-    }
-    
-    /**
-     * Insert a subject
-     * 
-     * {@inheritDoc}
-     * @see XoopsPersistableObjectHandler::insert()
-     */
-    function insert($object, $force = true)
-    {
-    	if ($object->isNew())
-    	{
-    		$criteria = new Criteria('subject', $object->getVar('subject'), 'LIKE');
-    		$criteria->setLimit(1);
-    		if ($this->getCount($criteria)>0)
-    			foreach($this->getObjects($criteria) as $obj)
-    			{
-    				$obj->setVar('email-id', $object->getVar('email-id'));
-    				return parent::insert($obj, $force);
-    			}
-    	}
-    	return parent::insert($object, $force);
     }
 }
 ?>

@@ -63,6 +63,7 @@ class pleaseTickets extends pleaseXoopsObject
     	
         self::initVar('id', XOBJ_DTYPE_INT, null, false);
         self::initVar('state', XOBJ_DTYPE_ENUM, 'new', false, false, false, getEnumeratorValues(basename(__FILE__), 'state'));
+        self::initVar('mode', XOBJ_DTYPE_ENUM, 'Open', false, false, false, getEnumeratorValues(basename(__FILE__), 'mode'));
         self::initVar('ticket-key', XOBJ_DTYPE_TXTBOX, 'XXX-0000000XAA', false, 20);
         self::initVar('subject-id', XOBJ_DTYPE_INT, null, false);
         self::initVar('from-id', XOBJ_DTYPE_INT, null, false);
@@ -83,6 +84,11 @@ class pleaseTickets extends pleaseXoopsObject
         
     }
 
+    function getAdminLink()
+    {
+    	$dirname = basename(dirname(__DIR__));
+    	return XOOPS_URL . '/modules/'.$dirname."/admin/view-ticket.php?id=" . $this->getMD5('id');
+    }
 }
 
 
@@ -128,6 +134,28 @@ class pleaseTicketsHandler extends pleaseXoopsObjectHandler
     	if (!object($db))
     		$db = $GLOBAL["xoopsDB"];
         parent::__construct($db, self::$tbl, self::$child, self::$identity, self::$envalued);
+    }
+    
+    /**
+     * Returns all active Ticket Keys
+     * 
+     * @param string $asobjects
+     * @return array
+     */
+    function getActiveKeysArray($asobjects = true)
+    {
+    	$criteria = new Criteria('closed', 0, '=');
+    	$result = array();
+    	foreach($this->getObjects($criteria) as $ticket)
+    	{
+    		if ($asobjects==true)
+    		{
+    			$result[$ticket->getVar('ticket-key')] = $ticket;
+    		} else {
+    			$result[$ticket->getVar('ticket-key')] = $ticket->getVar('id');
+    		}
+    	}
+    	return $result;
     }
 }
 ?>

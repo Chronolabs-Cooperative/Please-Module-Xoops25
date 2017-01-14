@@ -10,7 +10,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
  * @copyright   	The XOOPS Project http://sourceforge.net/projects/xoops/
- * @license     	GNU GPL 2 (http://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
+ * @license     	General Public License version 3 (http://labs.coop/briefs/legal/general-public-licence/13,3.html)
  * @author      	Simon Roberts (wishcraft) <wishcraft@users.sourceforge.net>
  * @subpackage  	please
  * @description 	Email Ticking for Support/Faults/Management of Batch Group & User managed emails tickets
@@ -21,31 +21,19 @@
  * @link			http://internetfounder.wordpress.com
  */
 
+ 	if(!defined('PLEASE_GROUP_CLIENT'))
+ 		define('PLEASE_GROUP_CLIENT', %client%);
+ 		
+ 	if(!defined('PLEASE_GROUP_STAFF'))
+ 		define('PLEASE_GROUP_STAFF', %staff%);
+ 		
+ 	if(!defined('PLEASE_GROUP_MANAGER'))
+ 		define('PLEASE_GROUP_MANAGER', %manager%); 
  
-/**
- * Salt for Blowfish encryption keys
- * var string
- */
-define("_PLEASE_SALT_BLOWFISH", "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
- 
-/**
- * Salt was set for Blowfish encryption keys at microtime(true)
- * var float
- */
-define("_PLEASE_SALT_WHENSET", "%%%%%%%%%%%%%%%%%%%%%%%%%");
-
-/**
- * Salt admin site when set for Blowfish encryption keys at XOOPS_URL
- * var string
- */
-define("_PLEASE_SALT_WHERESET", "%%%%%%%%%%%%%%%%%%%%");
-
-/**
- * Salt user when set for Blowfish encryption keys at site
- * var string  json
- */
-define("_PLEASE_SALT_USERSET", "%%%%%%%%%%%%%%%");
-
-// Existences notation
-return true;
-?>
+  	if(!defined('PLEASE_SALT'))
+ 		define('PLEASE_SALT', "%salt%"); 
+ 		
+ 	if(!defined('PLEASE_SALT_WHENSET'))
+ 		define('PLEASE_SALT_WHENSET', "%whenset%"); 	
+ 				
+ ?>

@@ -1,6 +1,6 @@
 <?php
 /**
- * Please Subjects Ticketer of Batch Group & User Subjectss
+ * Please Images Ticketer of Batch Group & User Imagess
  *
  * You may not change or alter any portion of this comment or credits
  * of supporting developers from this source code or any supporting source code
@@ -13,10 +13,10 @@
  * @license     	General Public License version 3 (http://labs.coop/briefs/legal/general-public-licence/13,3.html)
  * @author      	Simon Roberts (wishcraft) <wishcraft@users.sourceforge.net>
  * @subpackage  	please
- * @description 	Subjects Ticking for Support/Faults/Management of Batch Group & User managed emails tickets
+ * @description 	Images Ticking for Support/Faults/Management of Batch Group & User managed emails tickets
  * @version			1.0.5
- * @link        	https://sourceforge.net/projects/chronolabs/files/XOOPS%202.5/Modules/please
- * @link        	https://sourceforge.net/projects/chronolabs/files/XOOPS%202.6/Modules/please
+ * @link        	https://sourceforge.net/projects/chronolabs/Images/XOOPS%202.5/Modules/please
+ * @link        	https://sourceforge.net/projects/chronolabs/Images/XOOPS%202.6/Modules/please
  * @link			https://sourceforge.net/p/xoops/svn/HEAD/tree/XoopsModules/please
  * @link			http://internetfounder.wordpress.com
  */
@@ -29,23 +29,29 @@ if (!defined('_MI_PLEASE_MODULE_DIRNAME')) {
 require_once (__DIR__ . DIRECTORY_SEPARATOR . 'objects.php');
 
 /**
- * Class for Subjects in Please email ticketer
+ * Class for Images in Please email ticketer
  *
  * For Table:-
  * <code>
- * CREATE TABLE `please_subjects` (
- *   `id` mediumint(30) UNSIGNED NOT NULL AUTO_INCREMENT,
- *   `subject` varchar(300) DEFAULT '',
- *   `email-id` int(30) UNSIGNED DEFAULT '0',
+ * CREATE TABLE `please_images` (
+ *   `id` mediumint(38) unsigned NOT NULL AUTO_INCREMENT,
+ *   `storage` enum('PLEASE_DATA_PATH','PLEASE_UPLOAD_PATH') DEFAULT 'PLEASE_UPLOAD_PATH',
+ *   `mimetype-id` mediumint(30) unsigned NOT NULL DEFAULT '0',
+ *   `extension` varchar(30) DEFAULT '.',
+ *   `filename` varchar(255) DEFAULT '.',
+ *   `md5` varchar(32) DEFAULT '.',
+ *   `path` varchar(255) DEFAULT '.',
+ *   `bytes` int(12) DEFAULT '0',
  *   `created` int(12) DEFAULT '0',
- *   PRIMARY KEY (`id`),
- *   KEY `SEARCH` (`subject`(30),`email-id`)
+ *   `deleted` int(12) DEFAULT '0',
+ *   `accessed` int(12) DEFAULT '0',
+ *   PRIMARY KEY (`id`)
  * ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
  * </code>
  * @author Simon Roberts (wishcraft@users.sourceforge.net)
  * @copyright copyright (c) 2015 labs.coop
  */
-class pleaseSubjects extends pleaseXoopsObject
+class pleaseImages extends pleaseXoopsObject
 {
 
 	var $handler = '';
@@ -54,9 +60,16 @@ class pleaseSubjects extends pleaseXoopsObject
     {   	
     	
         self::initVar('id', XOBJ_DTYPE_INT, null, false);
-        self::initVar('subject', XOBJ_DTYPE_TXTBOX, null, false, 300);
-        self::initVar('email-id', XOBJ_DTYPE_INT, null, false);
+        self::initVar('storage', XOBJ_DTYPE_ENUM, 'PLEASE_UPLOAD_PATH', false, false, false, getEnumeratorValues(basename(__FILE__), 'storage'));
+        self::initVar('mimetype-id', XOBJ_DTYPE_INT, null, false);
+        self::initVar('extension', XOBJ_DTYPE_TXTBOX, null, false, 30);
+        self::initVar('filename', XOBJ_DTYPE_TXTBOX, null, false, 255);
+        self::initVar('path', XOBJ_DTYPE_TXTBOX, null, false, 255);
+        self::initVar('md5', XOBJ_DTYPE_TXTBOX, null, false, 32);
+        self::initVar('bytes', XOBJ_DTYPE_INT, null, false);
         self::initVar('created', XOBJ_DTYPE_INT, time(), false);
+        self::initVar('deleted', XOBJ_DTYPE_INT, 0, false);
+        self::initVar('accessed', XOBJ_DTYPE_INT, 0, false);
         
         $this->handler = __CLASS__ . 'Handler';
         if (!empty($id) && !is_null($id))
@@ -71,11 +84,11 @@ class pleaseSubjects extends pleaseXoopsObject
 
 
 /**
- * Handler Class for Subjects in Please email ticketer
+ * Handler Class for Images in Please email ticketer
  * @author Simon Roberts (wishcraft@users.sourceforge.net)
  * @copyright copyright (c) 2015 labs.coop
  */
-class pleaseSubjectsHandler extends pleaseXoopsObjectHandler
+class pleaseImagesHandler extends pleaseXoopsObjectHandler
 {
 	
 
@@ -84,14 +97,14 @@ class pleaseSubjectsHandler extends pleaseXoopsObjectHandler
 	 * 
 	 * @var string
 	 */
-	var $tbl = 'please_subjects';
+	var $tbl = 'please_Images';
 	
 	/**
 	 * Child Object Handling Class
 	 *
 	 * @var string
 	 */
-	var $child = 'pleaseSubjects';
+	var $child = 'pleaseImages';
 	
 	/**
 	 * Child Object Identity Key
@@ -105,7 +118,7 @@ class pleaseSubjectsHandler extends pleaseXoopsObjectHandler
 	 *
 	 * @var string
 	 */
-	var $envalued = 'subject';
+	var $envalued = 'filename';
 	
     function __construct(&$db) 
     {
@@ -115,25 +128,23 @@ class pleaseSubjectsHandler extends pleaseXoopsObjectHandler
     }
     
     /**
-     * Insert a subject
+     * Checks for existing image
      * 
-     * {@inheritDoc}
-     * @see XoopsPersistableObjectHandler::insert()
+     * @param string $md5
+     * @param string $asobject
+     * @return object|boolean
      */
-    function insert($object, $force = true)
+    function imageExists($md5 = '', $asobject = false)
     {
-    	if ($object->isNew())
-    	{
-    		$criteria = new Criteria('subject', $object->getVar('subject'), 'LIKE');
-    		$criteria->setLimit(1);
-    		if ($this->getCount($criteria)>0)
-    			foreach($this->getObjects($criteria) as $obj)
-    			{
-    				$obj->setVar('email-id', $object->getVar('email-id'));
-    				return parent::insert($obj, $force);
-    			}
-    	}
-    	return parent::insert($object, $force);
+    	$criteria = new Criteria('md5', $md5, "LIKE");
+    	if ($this->getCount($criteria)>0)
+    		if ($asobject==true)
+    		{
+ 				foreach($this->getObjects($criteria) as $obj) 
+ 					return $obj;
+    		} else
+    			return true;
+    	return false;
     }
 }
 ?>

@@ -45,7 +45,7 @@ class pleaseXoopsObject extends XoopsObject
 		if ($this->vars[$key]['data_type'] == XOBJ_DTYPE_OTHER) {
 			parent::assignVar($key, pleaseDecompressData($value));
 		} elseif (strpos($key, 'pass')||strpos($key, 'password')) {
-			parent::assignVar($key, pleaseDecryptPassword($value, _PLEASE_SALT_BLOWFISH . _PLEASE_SALT_WHENSET));
+			parent::assignVar($key, pleaseDecryptPassword($value, PLEASE_SALT . PLEASE_SALT_WHENSET));
 		} else
 			parent::assignVar($key, $value);
 	}
@@ -67,11 +67,22 @@ class pleaseXoopsObject extends XoopsObject
 					if ($object->vars[$field]['data_type'] == XOBJ_DTYPE_OTHER) {
 						$object->vars[$field]['value'] = pleaseCompressData($object->vars[$field]['value']);
 					} elseif (strpos($field, 'pass')||strpos($field, 'password')) {
-						$object->vars[$field]['value'] = pleaseEncryptPassword($object->vars[$field]['value'], _PLEASE_SALT_BLOWFISH . _PLEASE_SALT_WHENSET);
+						$object->vars[$field]['value'] = pleaseEncryptPassword($object->vars[$field]['value'], PLEASE_SALT . PLEASE_SALT_WHENSET);
 					}
 				}
 			}
 		return $ret;
+	}
+	
+	/**
+	 * Returns MD5 Identify hash for handler getMD5()'
+	 * 
+	 * @param string $field
+	 * @return string
+	 */
+	function getMD5($field = 'id')
+	{
+		return md5(PLEASE_SALT . $this->getVar($field) . PLEASE_SALT);
 	}
 }
 
@@ -83,6 +94,35 @@ class pleaseXoopsObject extends XoopsObject
 class pleaseXoopsObjectHandler extends XoopsPersistableObjectHandler
 {
 	
+
+	/**
+	 * Table Name without prefix used
+	 *
+	 * @var string
+	 */
+	var $tbl = '';
+	
+	/**
+	 * Child Object Handling Class
+	 *
+	 * @var string
+	 */
+	var $child = '';
+	
+	/**
+	 * Child Object Identity Key
+	 *
+	 * @var string
+	 */
+	var $identity = '';
+	
+	/**
+	 * Child Object Default Envaluing Costs
+	 *
+	 * @var string
+	 */
+	var $envalued = '';
+	
 	/**
 	 * Class Constructor
 	 * @param XoopsDB $db
@@ -91,10 +131,37 @@ class pleaseXoopsObjectHandler extends XoopsPersistableObjectHandler
 	 * @param string $identity
 	 * @param string $envalued
 	 */
-	function __construct(&$db, $tbl = '', $child = '', $identity = '', $envalued = '')
+	function __construct($db, $tbl = '', $child = '', $identity = '', $envalued = '')
 	{
 		if (!object($db))
 			$db = $GLOBAL["xoopsDB"];
-		return parent::__construct($db, $tbl, $child, $identity, $envalued);
+		$this->tbl = $tbl;
+		$this->child = $child;
+		$this->identity = $identity;
+		$this->envalued = $envalued;
+		return parent::__construct($db, $this->tbl, $this->child, $this->identity, $this->envalued);
 	}
+	
+	/**
+	 * Returns either object or identity key based on md5 passed to function
+	 * 
+	 * @param string $md5
+	 * @param string $asObject
+	 * @return XoopsObject|unknown|boolean
+	 */
+	function getMD5($md5 = '', $asObject = true)
+	{
+		$key = NULL;
+		$sql = "SELECT `" . $this->identity . "` FROM `" . $this->db->prefix($this->tbl) . "` WHERE MD5(CONCAT(" . $this->db->quote(PLEASE_SALT) . ", `" . $this->identity . "`, " . $this->db->quote(PLEASE_SALT) . ")) LIKE '" . $md5 . "'";
+		if ($result = $this->db->queryF($sql))
+		{
+			list($key) = $this->db->fetchRow($result);
+		}
+		if (!empty($key) && !is_null($key) && $asObject == true)
+			return $this->get($key);
+		if (!empty($key) && !is_null($key) && $asObject == false)
+			return $key;
+		return false;
+	}
+	
 }

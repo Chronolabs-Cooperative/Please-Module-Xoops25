@@ -21,15 +21,21 @@
 * @link			http://internetfounder.wordpress.com
 */
 
+include_once __DIR__ . '/header.php';
 
-define('_ERR_PLEASE_ADMIN_NODEPARTMENTS','You will have to add a department to getting started to setting up email ticketing first!');
-define('_ERR_PLEASE_ADMIN_LISTRANGEEXCEEDED','The range you have specified contains no data; will step back until data is found!');
-define('_ERR_PLEASE_ADMIN_INVALIDHASH', 'Invalid Identity Hash for the items; this means the checksum given was not locatable in the databaase!');
+	switch ($GLOBALS['op'])
+	{
+		case "departments":
+			
+			break;
+		case "add-department":
+				
+			break;
+		case "edit-department":
+				
+			break;
+	}
 
-/**
- * Mantis JSON Adaptor Error messages
- */
-define("_ERR_MANTIS_ADAPTOR_NOSUPPORT", "Mantis is not configured to be supported by the adaptor in module configurations.");
-define("_ERR_MANTIS_ADAPTOR_NOFUNCTION", "No function name specified.");
-define("_ERR_MANTIS_ADAPTOR_NOPASSKEY", "No security passkey specified.");
-define("_ERR_MANTIS_ADAPTOR_WRONGPASS", "No security passkey accuracy call IPv4 ~ %s.");
+
+include_once __DIR__ . '/footer.php';
+

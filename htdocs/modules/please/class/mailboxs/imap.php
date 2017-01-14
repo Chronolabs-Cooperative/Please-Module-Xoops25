@@ -21,33 +21,8 @@
  * @link			http://internetfounder.wordpress.com
  */
 
-/**
- * The Imap PHP class provides a wrapper for commonly used PHP IMAP functions.
- *
- * This class was originally written by Josh Grochowski, and was reformatted and
- * documented by Jeff Geerling.
- *
- * Usage examples can be found in the included README file, and all methods
- * should have adequate documentation to get you started.
- *
- * Quick Start:
- * @code
- *   include 'path/to/Imap/JJG/Imap.php';
- *   use \JJG\Imap as Imap;
- *   $mailbox = new Imap($host, $user, $pass, $port, $ssl, $folder);
- *   $mailbox->getMailboxInfo();
- * @endcode
- *
- * Minimum requirements: PHP 5.3.x, php5-imap
- *
- * @version 1.0-beta2
- * @author Josh Grochowski (josh[at]kastang[dot]com).
- * @author Jeff Geerling (geerlingguy).
- */
 
-namespace JJG;
-
-class Imap {
+class PleaseMailImap {
 
   private $host;
   private $user;
@@ -197,7 +172,75 @@ class Imap {
       if (!strlen($body) > 0) {
         $body = imap_fetchbody($this->mailbox, $messageId, 1);
       }
-
+      $attachments = array();
+      if (property_exists($body, 'parts'))
+      {
+      		$attachment=0;
+      		$current_attach_index=1;
+      		while(!empty($body)
+      			|| property_exists($body, 'parts')
+      			|| array_key_exists($current_attach_index - 1, $body->parts)
+      			) {
+      			$attachment++;
+      			$parts_count = count($body->parts) + 1;
+   				if ($current_attach_index > $parts_count) {
+   					continue;
+   				} else {
+      	
+   					while (true) {
+   						if ($current_attach_index > $parts_count) {
+   							continue;
+   						} else {
+	   					
+	   						$part = $body->parts[$current_attach_index - 1];
+	   					
+	   						if (!property_exists($part, 'disposition') || !in_array($part->disposition, $this->attachment_types)) {
+	   							$current_attach_index++;
+	   							continue;
+	   						}
+	   					
+	   						if (!empty($part->parameters)) {
+	   							$parameters = $part->parameters;
+	   							$fattr = 'NAME';
+	   							$attachments[$attachment]['type'] = 'INLINE';
+	   						} else {
+	   							$parameters = $part->dparameters;
+	   							$fattr = 'FILENAME';
+	   							$attachments[$attachment]['type'] = 'ATTACHMENT';
+	   						}
+	   					
+	   						foreach ($parameters as $parameter) {
+	   							if ($parameter->attribute == $fattr) {
+	   								$filename = $parameter->value;
+	   							}
+	   							if (strpos(' '.$parameter->attribute, 'mime'))
+	   								$attachments[$attachment]['mimetype'] = $parameter->value;
+	   						}
+	   					
+	   						if (empty($filename)) {
+	   							$current_attach_index++;
+	   							continue;
+	   						}
+	   					
+	   						$decoded = imap_mime_header_decode($filename);
+	   						$filename = '';
+	   						foreach ($decoded as $dec) {
+	   							if (!empty($dec->text)) {
+	   								$encoding = $dec->charset;
+	   								$fpart = $dec->text;
+	   								$filename .= $fpart;
+	   							}
+	   						}
+	   					
+	   						$attachments[$attachment]['filename'] = $filename;
+	   						$attachments[$attachment]['data'] = base64_decode(imap_fetchbody($this->mbox, $messageId, $current_attach_index));
+	   						$attachments[$attachment]['md5'] = md5($attachments[$attachment]['data']);
+	   						$current_attach_index++;
+   						}
+   					}
+   				}
+      	   	}
+      } 
       // Get the message body encoding.
       $encoding = $this->getEncodingType($messageId);
 
@@ -221,18 +264,13 @@ class Imap {
         'to' => $details->toaddress,
         'from' => $details->fromaddress,
         'cc' => isset($details->ccaddress) ? $details->ccaddress : '',
-        'bcc' => isset($details->bccaddress) ? $details->bccaddress : '',
         'reply_to' => isset($details->reply_toaddress) ? $details->reply_toaddress : '',
         'sender' => $details->senderaddress,
         'date_sent' => $details->date,
         'subject' => $details->subject,
-        'deleted' => $deleted,
-        'answered' => $answered,
-        'draft' => $draft,
         'body' => $body,
-        'original_encoding' => $encoding,
-        'size' => $details->Size,
         'auto_response' => $autoresponse,
+      	'attachments' => $attachments
       );
     }
     else {

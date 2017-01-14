@@ -20,16 +20,10 @@
 * @link			https://sourceforge.net/p/xoops/svn/HEAD/tree/XoopsModules/please
 * @link			http://internetfounder.wordpress.com
 */
-
-
-define('_ERR_PLEASE_ADMIN_NODEPARTMENTS','You will have to add a department to getting started to setting up email ticketing first!');
-define('_ERR_PLEASE_ADMIN_LISTRANGEEXCEEDED','The range you have specified contains no data; will step back until data is found!');
-define('_ERR_PLEASE_ADMIN_INVALIDHASH', 'Invalid Identity Hash for the items; this means the checksum given was not locatable in the databaase!');
-
-/**
- * Mantis JSON Adaptor Error messages
- */
-define("_ERR_MANTIS_ADAPTOR_NOSUPPORT", "Mantis is not configured to be supported by the adaptor in module configurations.");
-define("_ERR_MANTIS_ADAPTOR_NOFUNCTION", "No function name specified.");
-define("_ERR_MANTIS_ADAPTOR_NOPASSKEY", "No security passkey specified.");
-define("_ERR_MANTIS_ADAPTOR_WRONGPASS", "No security passkey accuracy call IPv4 ~ %s.");
+if (!empty($GLOBALS['template']))
+	$GLOBALS['xoopsTpl']->assign('footer',$footer="<div class='adminfooter'>\n" . "  <div style='text-align: center;'>\n" . "    <a href='http://www.xoops.org' rel='external'><img src='{$pathIcon32}/xoopsmicrobutton.gif' alt='XOOPS' title='XOOPS'></a>\n" . "  </div>\n" . '  ' . _AM_PLEASE_ADMIN_FOOTER . "\n" . '</div>');
+if (!empty($GLOBALS['template']))
+	$GLOBALS['xoopsTpl']->display($GLOBALS['template']);
+if (empty($GLOBALS['template']))
+	echo $footer;
+xoops_cp_footer();
