@@ -183,35 +183,36 @@ class pleaseMailboxsHandler extends pleaseXoopsObjectHandler
      */
     function getEmailTickets()
     {
-    	$addressesHandler = xoops_getModuleHandler('addresses', basename(dirname(__DIR__)));
-    	$bccHandler = xoops_getModuleHandler('bcc', basename(dirname(__DIR__)));
-    	$ccHandler = xoops_getModuleHandler('cc', basename(dirname(__DIR__)));
-    	$contentHandler = xoops_getModuleHandler('content', basename(dirname(__DIR__)));
-    	$departmentsEscalationHandler = xoops_getModuleHandler('departments_escalations', basename(dirname(__DIR__)));
-    	$departmentsStaffKeywordsHandler = xoops_getModuleHandler('departments_staff_keywords', basename(dirname(__DIR__)));
-    	$departmentsStaffHandler = xoops_getModuleHandler('departments_staff', basename(dirname(__DIR__)));
-    	$departmentsHandler = xoops_getModuleHandler('departments', basename(dirname(__DIR__)));
-    	$emailsFilesHandler = xoops_getModuleHandler('emails_files', basename(dirname(__DIR__)));
-    	$emailsHandler = xoops_getModuleHandler('emails', basename(dirname(__DIR__)));
-    	$filesHandler = xoops_getModuleHandler('files', basename(dirname(__DIR__)));
-    	$imagesHandler = xoops_getModuleHandler('images', basename(dirname(__DIR__)));
-    	$keywordsHandler = xoops_getModuleHandler('keywords', basename(dirname(__DIR__)));
-    	$messagesCCHandler = xoops_getModuleHandler('messages_cc', basename(dirname(__DIR__)));
-    	$messagesFilesHandler = xoops_getModuleHandler('messages_files', basename(dirname(__DIR__)));
-    	$messagesToHandler = xoops_getModuleHandler('messages_to', basename(dirname(__DIR__)));
-    	$messagesHandler = xoops_getModuleHandler('messages', basename(dirname(__DIR__)));
-    	$namesHandler = xoops_getModuleHandler('names', basename(dirname(__DIR__)));
-    	$spamKeywordsHandler = xoops_getModuleHandler('spam_keywords', basename(dirname(__DIR__)));
-    	$spamAddressesHandler = xoops_getModuleHandler('spam_addresses', basename(dirname(__DIR__)));
-    	$subjectsHandler = xoops_getModuleHandler('subjects', basename(dirname(__DIR__)));
-    	$ticketsAttachmentsHandler = xoops_getModuleHandler('tickets_attachments', basename(dirname(__DIR__)));
-    	$ticketsContentHandler = xoops_getModuleHandler('tickets_content', basename(dirname(__DIR__)));
-    	$ticketsDepartmentsHandler = xoops_getModuleHandler('tickets_departments', basename(dirname(__DIR__)));
-    	$ticketsFilesHandler = xoops_getModuleHandler('tickets_files', basename(dirname(__DIR__)));
-    	$ticketsKeywordsHandler = xoops_getModuleHandler('tickets_keywords', basename(dirname(__DIR__)));
-    	$ticketsRefereeHandler = xoops_getModuleHandler('tickets_referees', basename(dirname(__DIR__)));
-    	$ticketsHandler = xoops_getModuleHandler('tickets', basename(dirname(__DIR__)));
-    	$toHandler = xoops_getModuleHandler('to', basename(dirname(__DIR__)));
+    	$addressesHandler = xoops_getModuleHandler('addresses', _MI_PLEASE_MODULE_DIRNAME);
+    	$bccHandler = xoops_getModuleHandler('bcc', _MI_PLEASE_MODULE_DIRNAME);
+    	$ccHandler = xoops_getModuleHandler('cc', _MI_PLEASE_MODULE_DIRNAME);
+    	$contentHandler = xoops_getModuleHandler('content', _MI_PLEASE_MODULE_DIRNAME);
+    	$departmentsEscalationHandler = xoops_getModuleHandler('departments_escalations', _MI_PLEASE_MODULE_DIRNAME);
+    	$departmentsStaffKeywordsHandler = xoops_getModuleHandler('departments_staff_keywords', _MI_PLEASE_MODULE_DIRNAME);
+    	$departmentsStaffHandler = xoops_getModuleHandler('departments_staff', _MI_PLEASE_MODULE_DIRNAME);
+    	$departmentsHandler = xoops_getModuleHandler('departments', _MI_PLEASE_MODULE_DIRNAME);
+    	$emailsFilesHandler = xoops_getModuleHandler('emails_files', _MI_PLEASE_MODULE_DIRNAME);
+    	$emailsHandler = xoops_getModuleHandler('emails', _MI_PLEASE_MODULE_DIRNAME);
+    	$filesHandler = xoops_getModuleHandler('files', _MI_PLEASE_MODULE_DIRNAME);
+    	$imagesHandler = xoops_getModuleHandler('images', _MI_PLEASE_MODULE_DIRNAME);
+    	$keywordsHandler = xoops_getModuleHandler('keywords', _MI_PLEASE_MODULE_DIRNAME);
+    	$messagesCCHandler = xoops_getModuleHandler('messages_cc', _MI_PLEASE_MODULE_DIRNAME);
+    	$messagesFilesHandler = xoops_getModuleHandler('messages_files', _MI_PLEASE_MODULE_DIRNAME);
+    	$messagesToHandler = xoops_getModuleHandler('messages_to', _MI_PLEASE_MODULE_DIRNAME);
+    	$messagesHandler = xoops_getModuleHandler('messages', _MI_PLEASE_MODULE_DIRNAME);
+    	$mimetypesHandler = xoops_getModuleHandler('mimetypes', _MI_PLEASE_MODULE_DIRNAME);
+    	$namesHandler = xoops_getModuleHandler('names', _MI_PLEASE_MODULE_DIRNAME);
+    	$spamKeywordsHandler = xoops_getModuleHandler('spam_keywords', _MI_PLEASE_MODULE_DIRNAME);
+    	$spamAddressesHandler = xoops_getModuleHandler('spam_addresses', _MI_PLEASE_MODULE_DIRNAME);
+    	$subjectsHandler = xoops_getModuleHandler('subjects', _MI_PLEASE_MODULE_DIRNAME);
+    	$ticketsAttachmentsHandler = xoops_getModuleHandler('tickets_attachments', _MI_PLEASE_MODULE_DIRNAME);
+    	$ticketsContentHandler = xoops_getModuleHandler('tickets_content', _MI_PLEASE_MODULE_DIRNAME);
+    	$ticketsDepartmentsHandler = xoops_getModuleHandler('tickets_departments', _MI_PLEASE_MODULE_DIRNAME);
+    	$ticketsFilesHandler = xoops_getModuleHandler('tickets_files', _MI_PLEASE_MODULE_DIRNAME);
+    	$ticketsKeywordsHandler = xoops_getModuleHandler('tickets_keywords', _MI_PLEASE_MODULE_DIRNAME);
+    	$ticketsRefereeHandler = xoops_getModuleHandler('tickets_referees', _MI_PLEASE_MODULE_DIRNAME);
+    	$ticketsHandler = xoops_getModuleHandler('tickets', _MI_PLEASE_MODULE_DIRNAME);
+    	$toHandler = xoops_getModuleHandler('to', _MI_PLEASE_MODULE_DIRNAME);
     	$ticketkeys = $ticketsHandler->getActiveKeysArray(true);
     	
     	$sql = "SELECT `id` FROM `" . $this->db->prefix($this->tbl) . "` WHERE `action` + `waiting` < ".time()." OR  `errored` + (`waiting`*5) < " . time();
@@ -262,29 +263,42 @@ class pleaseMailboxsHandler extends pleaseXoopsObjectHandler
     									$newticket = true;
     									$ticketid = 0;
     									$subjectid = 0;
+    									foreach(array_keys($ticketkeys) as $key => $ticket)
+    									{
+    										if ($ticketid == 0 && (strpos(strtolower($subject), strtolower($key))>0 || strpos(strtolower($email['body']), strtolower($key))>0))
+    										{
+    											$ticketid = $ticket->getVar('id');
+    											$subjectid = $ticket->getVar('subject-id');
+    											$newticket = false;
+    											continue;
+    										}
+    									}
+    									if ($subjectid==0)
+    									{
+    										$subject = $subjectsHandler->create();
+    										$subject->setVar('subject', $subject);
+    										$subjectid=$subjectsHandler->insert($subject);
+    									}
+    									$subject = $subjectsHandler->get($subjectid);
+    									
     									switch($wammy['result'])
     									{
     										case "spam":
+    											
+    											if ($ticketid==0)
+    											{
+    												$newticket = true;
+    												$ticket = $ticketsHandler->create();
+    												$ticket->setVar('state', 'spam');
+    												$ticket->setVar('created', time());
+    												$ticket->setVar('subject-id', $subject->getVar('id'));
+    												$ticketid = $ticketsHandler->insert($ticket, true);
+    											}
     											break;
     									
     										default:
-    											foreach(array_keys($ticketkeys) as $key => $ticket)
-    											{
-    												if ($ticketid == 0 && (strpos(strtolower($subject), strtolower($key))>0 || strpos(strtolower($email['body']), strtolower($key))>0))
-    												{
-    													$ticketid = $ticket->getVar('id');
-    													$subjectid = $ticket->getVar('subject-id');
-    													$newticket = false;
-    													continue;
-    												}
-    											}
-    											if ($subjectid==0)
-    											{
-    												$subject = $subjectsHandler->create();
-    												$subject->setVar('subject', $subject);
-    												$subjectid=$subjectsHandler->insert($subject);
-    											}
-    											$subject = $subjectsHandler->get($subjectid);
+    											
+    											
     											if ($ticketid==0)
     											{
     												$newticket = true;
@@ -295,17 +309,23 @@ class pleaseMailboxsHandler extends pleaseXoopsObjectHandler
     												$ticketid = $ticketsHandler->insert($ticket, true);
     											}
     											$ticket = $ticketsHandler->get($ticketid);
-    											if (count($email['attachments']))
-    											{
-    												foreach($email['attachments'] as $attachment)
-    												{
-    													if (isset($attachment['mimetype']) && (strpos(' '.strtolower($attachment['mimetype']), 'image') || strpos(' '.strtolower($attachment['mimetype']), 'img')))
-    													{
-    														
-    													}
-    												}
-    											}
+    											break;
     											
+    									}
+    									if (count($email['attachments']))
+    									{
+    										foreach($email['attachments'] as $key => $attachment)
+    										{
+    											if (isset($attachment['mimetype']) && (strpos(' '.strtolower($attachment['mimetype']), 'image') || strpos(' '.strtolower($attachment['mimetype']), 'img')))
+    											{
+    												if ($imagesHandler->imageExists($attachment['md5'], false)==false)
+    												{
+    													$img = $imagesHandler->create();
+    														
+    												} else
+    													$email['attachments'][$key]['object'] = $imagesHandler->imageExists($attachment['md5'], true);
+    											}
+    										}
     									}
     								}
     							}

@@ -127,6 +127,60 @@ class pleaseMimetypesHandler extends pleaseXoopsObjectHandler
     	if (!object($db))
     		$db = $GLOBAL["xoopsDB"];
         parent::__construct($db, self::$tbl, self::$child, self::$identity, self::$envalued);
+        
+        $criteria = new Criteria("1", "1");
+        if ($this->getCount($criteria)==0)
+        {
+        	xoops_load('XoopsLists');
+        	foreach(XoopsLists::getFileListAsArray($path = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'include' . DIRECTORY_SEPARATOR . 'data') as $file)
+        	{
+        		if (substr($file,0,strlen('mimetypes-'))=='mimetypes-' && substr($file, strlen($file)-3) == 'diz')
+        		{
+        			foreach(file($path . DIRECTORY_SEPARATOR . $file) as $line => $value)
+        			{
+        				$parts = explode('||', trim(str_replace(array("\n", "\r", "\t"), "", $value)));
+        				$mime = $this->create();
+        				$mime->setVar('extensions', array($parts[0]=>$parts[0]));
+        				$mime->setVar('mimetype', $parts[1]);
+        				$mime->setVar('created', time());
+        				$this->insert($mime, true);
+        				unset($mime);
+        			}
+        		}
+        	}
+        	
+        }
+    }
+    
+    /**
+     * Inserts an object in the mimetypes table with no duplications
+     * 
+     * {@inheritDoc}
+     * @see XoopsPersistableObjectHandler::insert()
+     */
+    function insert($object, $force = true)
+    {
+    	if ($object->isNew())
+    	{
+    		$criteria = new Criteria('mimetype', $object->getVar('mimetype'), 'LIKE');
+    		$criteria->setLimit(1);
+    		if ($this->getCount($criteria)>0)
+    		{
+    			foreach($this->getObjects($criteria) as $obj)
+    			{
+    				foreach($object->getVar('extensions') as $key => $value)
+    				{
+    					if (!in_array($value, $obj->getVar('extensions')))
+    					{
+    						$obj->setVar('extensions', array_merge(array($value=>$value), $obj->getVar('extensions'));
+    					}
+    				}
+    				return return parent::insert($obj, true);
+    			}
+    		}
+    		$object->setVar('created', time());
+    	}
+    	return parent::insert($object, true);
     }
 }
 ?>
