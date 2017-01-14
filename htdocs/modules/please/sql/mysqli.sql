@@ -372,6 +372,7 @@ CREATE TABLE `please_messages_to` (
 CREATE TABLE `please_mimetypes` (
   `id` mediumint(38) unsigned NOT NULL AUTO_INCREMENT,
   `mimetype` varchar(255) DEFAULT '.',
+  `mode` varchar(26) DEFAULT 'unknown',
   `extensions` tinytext,
   `files-embedded` int(12) unsigned DEFAULT '0',
   `files-attachment` int(12) unsigned DEFAULT '0',

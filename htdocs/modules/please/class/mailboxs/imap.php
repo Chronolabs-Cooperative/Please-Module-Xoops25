@@ -217,6 +217,29 @@ class PleaseMailImap {
 	   								$attachments[$attachment]['mimetype'] = $parameter->value;
 	   						}
 	   					
+	   						if (isset($attachments[$attachment]['mimetype']) && !empty($attachments[$attachment]['mimetype']) && !empty($filename) && strpos($filename, ".")>0)
+	   						{
+	   							$mimetypesHandler = xoops_getModuleHandler('mimetypes', _MI_PLEASE_MODULE_DIRNAME);
+	   							$mime = $mimetypesHandler->create();
+	   							$mime->setVar('mimetype', $attachments[$attachment]['mimetype']);
+	   							$parts = array_reverse(explode(".", $filename));
+	   							$i=0;
+	   							foreach($parts as $key => $value)
+	   							{
+	   								$i++;
+	   								if ($i<=2)
+	   								{
+	   									if (strlen($value)>=5)
+	   										unset($parts[$keys]);
+	   								} else 
+	   									unset($parts[$keys]);
+	   							}
+	   							$extension = implode(".", array_reverse($parts));
+	   							$mime->setVar('extensions', array($extension=>$extension));
+	   							$mimetypesHandler->insert($mime, true);
+	   							unset($mime);
+	   						}
+	   						
 	   						if (empty($filename)) {
 	   							$current_attach_index++;
 	   							continue;

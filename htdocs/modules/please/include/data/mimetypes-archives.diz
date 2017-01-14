@@ -1,7 +1,6 @@
 .arc||application/octet-stream
 .arj||application/arj
 .arj||application/octet-stream
-.asm||text/x-asm
 .boz||application/x-bzip2
 .bsh||application/x-bsh
 .bz||application/x-bzip
@@ -26,7 +25,7 @@
 .zip||multipart/x-zip
 .zoo||application/octet-stream
 .bz2||application/x-bzip2
-.gz||application/gzip[5]
+.gz||application/gzip
 .lz||application/x-lzip
 .lzma||application/x-lzma
 .lzo||application/x-lzop

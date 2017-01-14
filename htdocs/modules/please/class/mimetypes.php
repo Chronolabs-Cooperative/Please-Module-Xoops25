@@ -62,6 +62,7 @@ class pleaseMimetypes extends pleaseXoopsObject
     	
         self::initVar('id', XOBJ_DTYPE_INT, null, false);
         self::initVar('mimetype', XOBJ_DTYPE_TXTBOX, null, false, 255);
+        self::initVar('mode', XOBJ_DTYPE_TXTBOX, 'unknown', false, 26);
         self::initVar('extensions', XOBJ_DTYPE_ARRAY, array(), false);
         self::initVar('files-embedded', XOBJ_DTYPE_INT, null, false);
         self::initVar('files-attachment', XOBJ_DTYPE_INT, null, false);
@@ -139,17 +140,46 @@ class pleaseMimetypesHandler extends pleaseXoopsObjectHandler
         			foreach(file($path . DIRECTORY_SEPARATOR . $file) as $line => $value)
         			{
         				$parts = explode('||', trim(str_replace(array("\n", "\r", "\t"), "", $value)));
-        				$mime = $this->create();
-        				$mime->setVar('extensions', array($parts[0]=>$parts[0]));
-        				$mime->setVar('mimetype', $parts[1]);
-        				$mime->setVar('created', time());
-        				$this->insert($mime, true);
-        				unset($mime);
+        				if (isset($parts[0]) && isset($parts[1]) && !empty($parts[0]) && !empty($parts[1]))
+        				{
+	        				$mime = $this->create();
+	        				$mime->setVar('extensions', array($parts[0]=>$parts[0]));
+	        				$mime->setVar('mimetype', $parts[1]);
+	        				$mime->setVar('mode', strtolower(str_replace(array('mimetypes-', '.diz'), '', $file)));
+	        				$mime->setVar('created', time());
+	        				$this->insert($mime, true);
+	        				unset($mime);
+        				}
         			}
         		}
         	}
         	
         }
+    }
+    
+    /**
+     * Get File Extension from Mimetype
+     * 
+     * @param string $mimetype
+     * @return string
+     */
+    function getFileExtension($mimetype = '')
+    {
+    	$criteria = new Criteria('mimetype', $mimetype, 'LIKE');
+    	$criteria->setLimit(1);
+    	if ($this->getCount($criteria)>0)
+    	{
+    		$objects = $this->getObjects($criteria);
+    		$extensions = $objects[0]->getVar('extensions');
+    		unset($objects);
+    	} else
+    		$extensions = array('.' . _MI_PLEASE_MODULE_DIRNAME . '.dat' => '.' . _MI_PLEASE_MODULE_DIRNAME . '.dat');
+    	shuffle($extensions);
+    	shuffle($extensions);
+    	shuffle($extensions);
+    	shuffle($extensions);
+    	shuffle($extensions);
+    	return $extensions[0];
     }
     
     /**
@@ -172,10 +202,10 @@ class pleaseMimetypesHandler extends pleaseXoopsObjectHandler
     				{
     					if (!in_array($value, $obj->getVar('extensions')))
     					{
-    						$obj->setVar('extensions', array_merge(array($value=>$value), $obj->getVar('extensions'));
+    						$obj->setVar('extensions', array_merge(array($value=>$value), $obj->getVar('extensions')));
     					}
     				}
-    				return return parent::insert($obj, true);
+    				return parent::insert($obj, true);
     			}
     		}
     		$object->setVar('created', time());
